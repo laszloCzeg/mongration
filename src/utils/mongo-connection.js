@@ -25,13 +25,11 @@ MongoConnection.prototype.connect = function(cb){
       function(err, db) {
         if(this.options && this.options.pass && this.options.user) {
           db.authenticate(this.options.user, this.options.pass, function(err) {
-            if(err) {
               return cb(err);
-            }
           })
+        } else {
+            return cb(err, db);
         }
-
-        return cb(err, db);
       }.bind(this));
 }
 
