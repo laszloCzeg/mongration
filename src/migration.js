@@ -130,11 +130,7 @@ Migration.prototype.migrate = function(doneCb) {
     }.bind(this));
 
     new MongoConnection(this.dbConfig, this.options).connect(function(err, db){
-          console.log(JSON.stringify(err));
-          if(err) {
-            return callback(err);
-          }
-          //assert.equal(err, null);
+          assert.equal(err, null);
           this.db = db;
           validate.call(this, function(err){
             if(err){
