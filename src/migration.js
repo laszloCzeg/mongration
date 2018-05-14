@@ -135,7 +135,7 @@ Migration.prototype.migrate = function(doneCb) {
         }
         console.log('hasDb:', !!db);
         return cb(err);
-    }
+    });
 };
 
 module.exports = Migration;
