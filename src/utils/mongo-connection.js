@@ -21,12 +21,7 @@ function MongoConnection(config, options){
 }
 
 MongoConnection.prototype.connect = function(cb){
-    console.log('hasConnectionUri', !!this.connectionUri);
-    console.log('hasOptions', !!this.options);
-    MongoClient.connect(this.connectionUri, this.options, function(err, db) {
-       console.log('error', err);
-        console.log('hasDb', !!db);
-    });
+    MongoClient.connect(this.connectionUri, this.options, cb);
 }
 
 MongoConnection.prototype.getConnectionUri = function(){
