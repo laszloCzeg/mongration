@@ -5,7 +5,7 @@ var assert = require('assert');
 var async = require('async');
 var fs = require('fs');
 var path = require('path');
-
+var MongoClient = require('mongodb').MongoClient;
 var merge = require("lodash.merge");
 
 var statuses = require('./utils/constants').statuses;
@@ -129,49 +129,13 @@ Migration.prototype.migrate = function(doneCb) {
         this.steps.push(_step);
     }.bind(this));
 
-    new MongoConnection(this.dbConfig, this.options).connect(function(err, db){
-          assert.equal(err, null);
-          this.db = db;
-          validate.call(this, function(err){
-            if(err){
-              return callback(err);
-            }
-            async.series(
-                this.steps.map(function(step){
-                  return function(cb){
-                    if(step.status === statuses.skipped){
-                      step.status = statuses.skipped;
-                      cb();
-                    }else if(step.status === statuses.pending){
-                      step.up(db, function(err){
-                        if(err){
-                          step.status = statuses.error;
-                          return cb("[" + step.id + "] unable to complete migration: " + err);
-                        }
-
-                        this.db.collection(this.collection).insert(new StepVersionCollection(step.id, step.checksum, step.order, new Date()), function(err){
-                          if(err){
-                            step.status = statuses.error;
-                            return cb("[" + step.id + "] failed to save migration version: " + err);
-                          }
-                          step.status = statuses.ok;
-                          cb();
-                        });
-                      }.bind(this));
-                    }
-                  }.bind(this)
-                }.bind(this)),
-
-                function(err){
-                  if(err){
-                    rollback.call(this, callback, err);
-                  }else{
-                    callback();
-                  }
-                }.bind(this)
-            );
-          }.bind(this));
-    }.bind(this));
+    MongoClient.connect(this.dbConfig.mongoUri, this.options, function(err,db) {
+        if(err) {
+          console.log('mongoClientError:', err);
+        }
+        console.log('hasDb:', !!db);
+        return cb(err);
+    }
 };
 
 module.exports = Migration;
