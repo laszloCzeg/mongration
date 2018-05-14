@@ -6,7 +6,6 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var MongoClient = require('mongodb').MongoClient;
-
 var merge = require("lodash.merge");
 
 var statuses = require('./utils/constants').statuses;
